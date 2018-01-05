@@ -7,25 +7,28 @@ use utf8;
 
 binmode STDOUT, ":utf8";
 
-my @paths = (
-    ".",
-    "./vue-hljs",
-);
-
+my $dir = "~/*/package.json";
+my @paths = glob( $dir );
+my %count;
 foreach my $path ( @paths ) {
     my $json;
     {
         local $/; #Enable 'slurp' mode
-        open my $fh, "<", $path."/package.json";
+        open my $fh, "<", $path;
         $json = <$fh>;
         close $fh;
     }
     my $data = decode_json($json);
-    my @names = keys $data->{'dependencies'};
-    foreach my $name ( @names ) {
-        print $name . "\n"
+    if(exists($data->{'dependencies'})){
+        foreach ( keys $data->{'dependencies'} ) {
+            ( exists($count{$_}) ) ? $count{$_} += 1 : $count{$_} = 1 ;
+        }
     }
 }
+foreach (keys %count) {
+    print $_ . ":" . $count{$_} . "\n";
+}
+
 
 
 
