@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-use strict;
+# use strict;
 use warnings;
 use autodie;
 use JSON;
@@ -21,12 +21,38 @@ foreach my $path ( @paths ) {
     my $data = decode_json($json);
     if(exists($data->{'dependencies'})){
         foreach ( keys $data->{'dependencies'} ) {
-            ( exists($count{$_}) ) ? $count{$_} += 1 : $count{$_} = 1 ;
+            if(exists($count{$_})) {
+                $count{$_}++;
+            } else {
+                $count{$_} = 1;
+            }
         }
     }
 }
-foreach (keys %count) {
-    print $_ . ":" . $count{$_} . "\n";
+
+format COUNT =
+@< @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<                @<   |
+$index, $name, $count
+----------------------------------------------------------------------
+.
+
+format COUNT_TOP =
+----------------------------------------------------------------------
+node package name (page:@<,@<</page)                            count|
+$%, $=/2 -2
+----------------------------------------------------------------------
+.
+select(STDOUT);
+$~ = COUNT;
+$^ = COUNT_TOP;
+$= = 204; #(page_line_count + 2)* 2
+
+my $counter = 1;
+foreach (sort { $count{$b} <=> $count{$a} } keys %count) {
+    $index = $counter++;
+    $name = $_;
+    $count = $count{$_};
+    write;
 }
 
 
