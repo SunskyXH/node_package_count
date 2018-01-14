@@ -6,8 +6,12 @@ use JSON;
 use utf8;
 
 binmode STDOUT, ":utf8";
-
-my $dir = "~/*/package.json";
+print "Path to your package.json: (default to '~/*/package.json')\n";
+my $dir = <STDIN>;
+chomp($dir);
+if(!$dir) {
+    $dir = "~/*/package.json";
+}
 my @paths = glob( $dir );
 my %count;
 foreach my $path ( @paths ) {
